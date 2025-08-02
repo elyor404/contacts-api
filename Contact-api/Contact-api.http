@@ -1,0 +1,39 @@
+@Host = http://localhost:5063
+
+POST {{Host}}/api/contacts
+Content-Type: application/json
+
+{
+    "firstName": "Elyor",
+    "lastName": "Khatan",
+    "phoneNumber": "+998999999997",
+    "email": "Elyor97@gmail.com",
+}
+
+###
+GET {{Host}}/api/contacts
+###
+GET {{Host}}/api/contacts/4
+###
+PUT {{Host}}/api/contacts/2
+Content-Type: application/json
+
+{
+  "firstName": "Elyor",
+  "lastName": "Khatan",
+  "phoneNumber": "+998999999995",
+  "email": "Elyor95@gmail.com"
+}
+###
+PATCH  {{Host}}/api/contacts/2  
+Content-Type: application/json
+
+{
+  "firstName": "Elyor",
+  "lastName": "Khatan",
+  "phoneNumber": "+998999999995", #only phone number can be updated
+  "email": "Elyor95@gmail.com"
+}
+###
+DELETE  {{Host}}/api/contacts/1
+###
