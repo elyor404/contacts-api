@@ -15,5 +15,6 @@ public interface IContactService
     ValueTask DeleteContactAsync(int id, CancellationToken cancellationToken = default);
     ValueTask<bool> IsPhoneExistsAsync(string PhoneNumber, CancellationToken cancellationToken = default);
     ValueTask<bool> IsEmailExistsAsync(string Email, CancellationToken cancellationToken = default);
+    ValueTask<bool> IsIdExistsAsync(int id, CancellationToken cancellationToken = default);
 
 }

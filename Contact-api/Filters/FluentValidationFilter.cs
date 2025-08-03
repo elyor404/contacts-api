@@ -8,6 +8,7 @@ namespace Contact.Api.Filter;
 public class AsyncAutoValidation(IServiceProvider serviceProvider) : IAsyncActionFilter
 {
     public static int OrderLowerThanModelStateInvalidFilter => -2001;
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         foreach (var parameter in context.ActionDescriptor.Parameters)
@@ -17,16 +18,31 @@ public class AsyncAutoValidation(IServiceProvider serviceProvider) : IAsyncActio
 
             var canBeValidated = isParameterFromBodyOrQuery && parameter.ParameterType.IsClass;
 
-            if (canBeValidated && serviceProvider.GetService(typeof(IValidator<>).MakeGenericType(parameter.ParameterType)) is IValidator validator)
+            if (canBeValidated &&
+                context.ActionArguments.TryGetValue(parameter.Name, out var subject) &&
+                subject is not null &&
+                serviceProvider.GetService(typeof(IValidator<>).MakeGenericType(parameter.ParameterType)) is IValidator validator)
             {
-                var subject = context.ActionArguments[parameter.Name];
-                var result = await validator.ValidateAsync(new ValidationContext<object?>(subject), context.HttpContext.RequestAborted);
+                var idProp = parameter.ParameterType.GetProperty("Id");
+                if (idProp is not null &&
+                    context.RouteData.Values.TryGetValue("id", out var idValue) &&
+                    int.TryParse(idValue?.ToString(), out var id))
+                {
+                    idProp.SetValue(subject, id);
+                }
+
+                var result = await validator.ValidateAsync(
+                    new ValidationContext<object?>(subject),
+                    context.HttpContext.RequestAborted
+                );
+
                 if (!result.IsValid)
                 {
                     result.AddToModelState(context.ModelState, null);
                 }
             }
         }
+
         await next();
     }
 }

@@ -1,3 +1,4 @@
+using System.Data;
 using Contact.Api.Abstraction;
 using Contact.Api.Dtos;
 using FluentValidation;
@@ -9,6 +10,11 @@ public class UpdateContactValidator : AbstractValidator<UpdateContactDto>
     public UpdateContactValidator(IContactService service)
     {
         ValidatorOptions.Global.DefaultClassLevelCascadeMode = CascadeMode.Stop;
+      
+        RuleFor(c => c.Id)
+            .Cascade(CascadeMode.Stop)
+            .MustAsync(async (id, token) => await service.IsIdExistsAsync(id, token))
+            .WithMessage((dto, id) => $"Contact with id '{id}' doesn't exist.");
 
         RuleFor(c => c.FirstName)
             .NotEmpty()

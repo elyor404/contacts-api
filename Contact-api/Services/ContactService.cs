@@ -4,7 +4,6 @@ using Contact.Api.Abstraction;
 using Contact.Api.Dtos;
 using Contact.Api.Exceptions;
 using Contact.Api.Model;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Contact.Api.Services;
 
@@ -40,18 +39,12 @@ public class ContactService(IMapper mapper) : IContactService
         contacts[contactToUpdate.PhoneNumber!] = contactToUpdate;
         return contactToUpdate;
     }
-
-    // public async ValueTask<Model.Contact> UpdateContactAsync(int id, UpdateContact contact, CancellationToken cancellationToken = default)
-    // {
-    //     var result = await GetSingleContactAsync(id, cancellationToken);
-    //     mapper.Map(contact, result);
-    //     return result;
-    // }
-
     public async ValueTask<Model.Contact> UpdateSinglePartOfContactAsync(int id, PatchContact patchContact, CancellationToken cancellationToken = default)
     {
         var result = await GetSingleContactAsync(id, cancellationToken);
+        contacts.Remove(result.PhoneNumber!);
         mapper.Map(patchContact, result);
+        contacts[result.PhoneNumber!] = result;
         return result;
     }
     public async ValueTask DeleteContactAsync(int id, CancellationToken cancellationToken = default)
@@ -65,5 +58,6 @@ public class ContactService(IMapper mapper) : IContactService
     public ValueTask<bool> IsPhoneExistsAsync(string PhoneNumber, CancellationToken cancellationToken = default)
         => ValueTask.FromResult(contacts.Values.Any(a => a.PhoneNumber==PhoneNumber));
 
-
+    public ValueTask<bool> IsIdExistsAsync(int id, CancellationToken cancellationToken = default)
+        => ValueTask.FromResult(contacts.Values.Any(c => c.Id == id));
 }

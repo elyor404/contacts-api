@@ -2,7 +2,6 @@ using AutoMapper;
 using Contact.Api.Abstraction;
 using Contact.Api.Dtos;
 using Contact.Api.Model;
-using Contact.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -24,8 +23,8 @@ public class ContactsController(
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken abortionToken = default)
     {
-        var result = await contactService.GetAllContactsAsync(abortionToken);
-        return Ok(result.Select(mapper.Map<ContactDto>));
+        var allContacts = await contactService.GetAllContactsAsync(abortionToken);
+        return Ok(allContacts.Select(mapper.Map<ContactDto>));
     }
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSingle(int id, CancellationToken abortionToken = default)
@@ -36,15 +35,14 @@ public class ContactsController(
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateContact(int id, [FromBody] UpdateContactDto dto ,CancellationToken abortionToken = default)
     {
-        dto.Id = id;
         var updated = await contactService.UpdateContactAsync(id, mapper.Map<UpdateContact>(dto) ,abortionToken);
         return Ok(mapper.Map<ContactDto>(updated));
     }
     [HttpPatch("{id}")]
     public async Task<IActionResult> UpdateSinglePropertyAsync(int id, [FromBody] PatchContactDto dto ,CancellationToken abortionToken = default)
     {
-        var updated = await contactService.UpdateSinglePartOfContactAsync(id, mapper.Map<PatchContact>(dto) ,abortionToken);
-        return Ok(mapper.Map<ContactDto>(updated));
+        var updatedSinglePart = await contactService.UpdateSinglePartOfContactAsync(id, mapper.Map<PatchContact>(dto) ,abortionToken);
+        return Ok(mapper.Map<ContactDto>(updatedSinglePart));
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteContactAsync(int id, CancellationToken abortionToken = default)

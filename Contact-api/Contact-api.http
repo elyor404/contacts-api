@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
     "firstName": "Elyor",
-    "lastName": "Khatan",
+    "lastName": "Khatanboyev",
     "phoneNumber": "+998999999999",
     "email": "Elyor99@gmail.com",
 }
@@ -15,25 +15,22 @@ GET {{Host}}/api/contacts
 ###
 GET {{Host}}/api/contacts/4
 ###
-PUT {{Host}}/api/contacts/2
+PUT {{Host}}/api/contacts/10
 Content-Type: application/json
 
 {
   "firstName": "Elyor",
-  "lastName": "Khatan",
-  "phoneNumber": "+998999999995",
-  "email": "Elyor95@gmail.com"
+  "lastName": "Khatanboyev",
+  "phoneNumber": "+998999999999",
+  "email": "Elyor99@gmail.com"
 }
 ###
-PATCH  {{Host}}/api/contacts/2  
+PATCH  {{Host}}/api/contacts/1
 Content-Type: application/json
 
 {
-  "firstName": "Elyor",
-  "lastName": "Khatan",
-  "phoneNumber": "+998999999995", #only phone number can be updated
-  "email": "Elyor95@gmail.com"
+  "phoneNumber": "+998999999998"
 }
 ###
-DELETE  {{Host}}/api/contacts/1
+DELETE  {{Host}}/api/contacts/3
 ###
