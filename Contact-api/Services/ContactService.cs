@@ -29,16 +29,24 @@ public class ContactService(IMapper mapper) : IContactService
     public ValueTask<Model.Contact> GetSingleContactAsync(int id, CancellationToken cancellationToken = default)
     {
 
-        var contact = contacts.Values.FirstOrDefault(c => c.Id == id) ?? throw new KeyNotFoundException($"Contact with id {id} was not found.");
+        var contact = contacts.Values.FirstOrDefault(c => c.Id == id) ?? throw new CustomNotFoundException($"Contact with id {id} was not found.");
         return ValueTask.FromResult(contact);
     }
-
     public async ValueTask<Model.Contact> UpdateContactAsync(int id, UpdateContact contact, CancellationToken cancellationToken = default)
     {
-        var result = await GetSingleContactAsync(id, cancellationToken);
-        mapper.Map(contact, result);
-        return result;
+        var contactToUpdate = await GetSingleContactAsync(id, cancellationToken);
+        contacts.Remove(contactToUpdate.PhoneNumber!);
+        mapper.Map(contact, contactToUpdate);
+        contacts[contactToUpdate.PhoneNumber!] = contactToUpdate;
+        return contactToUpdate;
     }
+
+    // public async ValueTask<Model.Contact> UpdateContactAsync(int id, UpdateContact contact, CancellationToken cancellationToken = default)
+    // {
+    //     var result = await GetSingleContactAsync(id, cancellationToken);
+    //     mapper.Map(contact, result);
+    //     return result;
+    // }
 
     public async ValueTask<Model.Contact> UpdateSinglePartOfContactAsync(int id, PatchContact patchContact, CancellationToken cancellationToken = default)
     {
@@ -56,5 +64,6 @@ public class ContactService(IMapper mapper) : IContactService
 
     public ValueTask<bool> IsPhoneExistsAsync(string PhoneNumber, CancellationToken cancellationToken = default)
         => ValueTask.FromResult(contacts.Values.Any(a => a.PhoneNumber==PhoneNumber));
+
 
 }
